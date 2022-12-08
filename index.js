@@ -10,20 +10,22 @@ try {
   core.setOutput("time", time);
   // Get the JSON webhook payload for the event that triggered the workflow
   const context = new Context();
+  const mergedInto = context?.payload?.pull_request?.base.ref;
+  const repository= context?.payload?.pull_request?.repository;
+  const labels= repository.labels;
+  
   const payload = {
     context,
-    event_name: github.event_name,
-    event: github.event,
+    labels
   };
   console.log(`The event payload: ${JSON.stringify(payload, null, 2)}`);
 
   // Pull labels
   let patchRelease = {};
-  let mergedInto = payload?.context?.payload?.pull_request?.base.ref;
-  let repository= payload?.context?.payload?.pull_request?.repository;
+
   
-  for (label of payload?.context?.payload?.pull_request?.labels) {
-    if (label.name.includes("patch:")) {
+  for (label of labels) {
+    if (label?.name.includes("patch:")) {
       const patchBranch = label.name.split("patch:")[1];
       if (!patchRelease[patchBranch]) {
         patchRelease[patchBranch] = [];
