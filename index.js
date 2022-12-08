@@ -1,5 +1,6 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
+import {Context} from '@actions/github/lib/context';
 
 try {
   // `who-to-greet` input defined in action metadata file
@@ -8,8 +9,10 @@ try {
   const time = new Date().toTimeString();
   core.setOutput("time", time);
   // Get the JSON webhook payload for the event that triggered the workflow
+  const context = new Context();
   const payload = JSON.stringify(
     {
+      context,
       event_name: github.event_name,
       event: github.event,
     },
