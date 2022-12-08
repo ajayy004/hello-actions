@@ -30,8 +30,10 @@ try {
   //   labels,
   // };
   // console.log(`The event payload: ${JSON.stringify(payload, null, 2)}`);
-  
-  const octokit = new github.getOctokit(core.getInput('repo_token', {required: true}))
+
+  const octokit = new github.getOctokit(
+    core.getInput("repo_token", { required: true })
+  );
   // Pull labels
   let patchRelease = {};
   for await (let label of labels) {
@@ -46,16 +48,17 @@ try {
           ref: `refs/heads/${mergedInto}`,
           sha: pull_request.merge_commit_sha,
           title: `Cherry-pick PR #${pull_request.number} into ${patchBranch}`,
-          body: `This cherry-pick was triggered by a request on ${pull_request.html_url}`
+          body: `This cherry-pick was triggered by a request on ${pull_request.html_url}`,
         };
-        console.log("dataSet -> ", JSON.stringify(dataSet, null, 2))
-        const mergeRef = `refs/heads/${dataSet.repo}-bot:pick/${pull_request.number}/${patchBranch}`;
+        console.log("dataSet -> ", JSON.stringify(dataSet, null, 2));
+        const mergeRef = `refs/heads/${dataSet.repo}-bot`;
 
         await octokit.rest.git.createRef({
           owner: dataSet.owner,
           repo: dataSet.repo,
           ref: mergeRef,
           sha: dataSet.sha,
+          body: dataSet.body,
         });
 
         await octokit.rest.pulls.create({
@@ -64,7 +67,7 @@ try {
           title: dataSet.title,
           head: mergeRef,
           base: dataSet.releaseName,
-          body: dataSet.body
+          body: dataSet.body,
         });
       } catch (error) {
         console.log("pull request failed", error.message);
