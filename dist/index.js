@@ -21,7 +21,7 @@ try {
   // Get the JSON webhook payload for the event that triggered the workflow
   const context = new _actions_github_lib_context__WEBPACK_IMPORTED_MODULE_0__.Context();
   const mergedInto = context?.payload?.pull_request?.base.ref;
-  const repository= context?.payload?.pull_request?.repository;
+  const repository= context?.payload?.repository;
   const labels= repository.labels;
   
   const payload = {
