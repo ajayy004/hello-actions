@@ -11,38 +11,30 @@ try {
   // Get the JSON webhook payload for the event that triggered the workflow
   const context = new Context();
   const mergedInto = context?.payload?.pull_request?.base.ref;
-  const repository= context?.payload?.repository;
-  const labels= context?.payload?.pull_request.labels;
-  
+  const repository = context?.payload?.repository;
+  const labels = context?.payload?.pull_request.labels;
+  const pull_request = context?.payload?.pull_request;
+
   const payload = {
     context,
-    labels
+    labels,
   };
   console.log(`The event payload: ${JSON.stringify(payload, null, 2)}`);
 
   // Pull labels
   let patchRelease = {};
-  for (let label of labels) {
+  for await (let label of labels) {
     if (label?.name.includes("patch:")) {
       const patchBranch = label.name.split("patch:")[1];
-      if (!patchRelease[patchBranch]) {
-        patchRelease[patchBranch] = [];
-      }
-      patchRelease[patchBranch].push(pull);
-    }
-  }
 
-  for await (const releaseName of Object.keys(patchRelease)) {
-    for await (const release of patchRelease[releaseName]) {
       try {
         const dataSet = {
           owner: repository.owner.login,
           repo: repository.name,
-          releaseName,
-          mergedBranch: release.head.ref,
+          releaseName: patchBranch,
           ref: `refs/heads/${mergedInto}`,
-          sha: release.merge_commit_sha,
-          title: `Cherry pick: ${release.title}`,
+          sha: pull_request.sha,
+          title: `Cherry pick: ${pull_request.title}`,
         };
         const mergeRef = "refs/heads/test-" + new Date().getTime();
 
@@ -63,6 +55,11 @@ try {
       } catch (error) {
         console.log("pull request failed", error.message);
       }
+    }
+  }
+
+  for await (const releaseName of Object.keys(patchRelease)) {
+    for await (const release of patchRelease[releaseName]) {
     }
   }
 } catch (error) {
