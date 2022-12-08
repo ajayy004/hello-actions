@@ -22,7 +22,7 @@ try {
   const context = new _actions_github_lib_context__WEBPACK_IMPORTED_MODULE_0__.Context();
   const mergedInto = context?.payload?.pull_request?.base.ref;
   const repository= context?.payload?.repository;
-  const labels= repository.labels;
+  const labels= context?.payload?.pull_request.labels;
   
   const payload = {
     context,

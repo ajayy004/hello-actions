@@ -12,7 +12,7 @@ try {
   const context = new Context();
   const mergedInto = context?.payload?.pull_request?.base.ref;
   const repository= context?.payload?.repository;
-  const labels= repository.labels;
+  const labels= context?.payload?.pull_request.labels;
   
   const payload = {
     context,
