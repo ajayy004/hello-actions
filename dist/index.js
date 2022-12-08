@@ -31,7 +31,7 @@ try {
   };
   console.log(`The event payload: ${JSON.stringify(payload, null, 2)}`);
   
-  const client = new github.GitHub(core.getInput('repo_token', {required: true}))
+  const octokit = new github.getOctokit(core.getInput('repo_token', {required: true}))
   // Pull labels
   let patchRelease = {};
   for await (let label of labels) {
@@ -49,14 +49,14 @@ try {
         };
         const mergeRef = "refs/heads/test-" + new Date().getTime();
 
-        await client.git.createRef({
+        await octokit.rest.git.createRef({
           owner: dataSet.owner,
           repo: dataSet.repo,
           ref: mergeRef,
           sha: dataSet.sha,
         });
 
-        await client.pulls.create({
+        await octokit.rest.pulls.create({
           owner: dataSet.owner,
           repo: dataSet.repo,
           title: dataSet.title,
