@@ -35,10 +35,11 @@ try {
           releaseName: patchBranch,
           ref: `refs/heads/${mergedInto}`,
           sha: pull_request.merge_commit_sha,
-          title: `Cherry pick: ${pull_request.title}`,
+          title: `Cherry-pick PR #${pull_request.number} into ${patchBranch}`,
+          body: `This cherry-pick was triggered by a request on ${pull_request.html_url}`
         };
         console.log("dataSet -> ", JSON.stringify(dataSet, null, 2))
-        const mergeRef = "refs/heads/test-" + new Date().getTime();
+        const mergeRef = `refs/heads/${dataSet.repo}-bot:pick/${pull_request.number}/${patchBranch}`;
 
         await octokit.rest.git.createRef({
           owner: dataSet.owner,
@@ -53,6 +54,7 @@ try {
           title: dataSet.title,
           head: mergeRef,
           base: dataSet.releaseName,
+          body: dataSet.body
         });
       } catch (error) {
         console.log("pull request failed", error.message);
