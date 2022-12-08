@@ -22,9 +22,7 @@ try {
 
   // Pull labels
   let patchRelease = {};
-
-  
-  for (label of labels) {
+  for (let label of labels) {
     if (label?.name.includes("patch:")) {
       const patchBranch = label.name.split("patch:")[1];
       if (!patchRelease[patchBranch]) {
