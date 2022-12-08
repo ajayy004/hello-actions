@@ -25,11 +25,11 @@ try {
   const labels = context?.payload?.pull_request.labels;
   const pull_request = context?.payload?.pull_request;
 
-  const payload = {
-    context,
-    labels,
-  };
-  console.log(`The event payload: ${JSON.stringify(payload, null, 2)}`);
+  // const payload = {
+  //   context,
+  //   labels,
+  // };
+  // console.log(`The event payload: ${JSON.stringify(payload, null, 2)}`);
   
   const octokit = new github.getOctokit(core.getInput('repo_token', {required: true}))
   // Pull labels
@@ -44,9 +44,10 @@ try {
           repo: repository.name,
           releaseName: patchBranch,
           ref: `refs/heads/${mergedInto}`,
-          sha: pull_request.sha,
+          sha: pull_request.merge_commit_sha,
           title: `Cherry pick: ${pull_request.title}`,
         };
+        console.log("dataSet -> ", JSON.stringify(dataSet, null, 2))
         const mergeRef = "refs/heads/test-" + new Date().getTime();
 
         await octokit.rest.git.createRef({
